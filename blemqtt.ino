@@ -275,7 +275,8 @@ void publishEvents() {
 void taskWifiActivity(void* pvParameters) {
     Serial.println("Wifi Task Started");
     WifiActivityState state = WifiActivityState::WifiReconnect;
-    while (true)
+    bool shouldStop = false;
+    while (!shouldStop)
     {
         wl_status_t wifiStatus = WiFi.status();
         Serial.printf("Wifi status: %d State: %d\n", wifiStatus, state);
@@ -355,11 +356,12 @@ void taskWifiActivity(void* pvParameters) {
 
             case WifiActivityState::Error:
                 Serial.println("Connection error");
-                return; // end task
+                shouldStop = true; // end task
                 // TODO add code for connection retry with increasing time intervals
                 break;
             default:
                 break;
         }
     }
+    vTaskDelete(NULL);
 }
